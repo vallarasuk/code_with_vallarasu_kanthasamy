@@ -39,14 +39,23 @@ def main():
     caption = f"{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n#coding #programming #developer #python #javascript #tech #webdev #software #codewithvallarasukanthasamy"
     
     if args.dry_run:
+        post_url = "https://instagram.com/p/DRY-RUN-VIDEO/"
         print(f"[DRY-RUN] Would post {video_path} to Instagram with caption:\n{caption}")
+        with open("post_result.txt", "w") as f:
+            f.write(f"Dry Run Video URL: {post_url}\nTitle: {title}")
     else:
         success = post_to_instagram(video_path, caption)
         if success:
             print("Successfully posted to Instagram!")
+            # Assuming post_to_instagram returns True, we might not have the URL unless we modify instagram_poster.py too.
+            # But the user is mostly focused on the image poster. Let's just output success.
+            with open("post_result.txt", "w") as f:
+                f.write(f"Post Success.\nTitle: {title}")
         else:
             print("Failed to post to Instagram.")
-            
+            with open("post_result.txt", "w") as f:
+                f.write(f"Failed to post video.\nTitle: {title}")
+            exit(1)
     # Cleanup temporary files
     for temp_file in [audio_path, image_path]:
         if temp_file and os.path.exists(temp_file):

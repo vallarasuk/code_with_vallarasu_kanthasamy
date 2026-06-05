@@ -36,4 +36,67 @@ jobs:
           INSTAGRAM_USERNAME: ${{ secrets.INSTAGRAM_USERNAME }}
           INSTAGRAM_PASSWORD: ${{ secrets.INSTAGRAM_PASSWORD }}
         run: |
-          python main.py
+          python post_image.py
+
+      - name: Read Post Result
+        id: result
+        if: always()
+        run: |
+          if [ -f "post_result.txt" ]; then
+            content=$(cat post_result.txt)
+            echo "content<<EOF" >> $GITHUB_OUTPUT
+            echo "$content" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "content=Script failed before writing result." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send success email
+        if: ${{ success() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          from: "Coding Tips Bot <${{ secrets.EMAIL_USER }}>"
+          to: vallarasuk143@gmail.com
+          server_address: smtp.gmail.com
+          server_port: "465"
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: "Daily Post SUCCESS - Run #${{ github.run_number }}"
+          body: |
+            ✅ Daily coding tip published successfully!
+
+            --- Post Details ---
+            ${{ steps.result.outputs.content }}
+
+            🔗 View run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          secure: true
+
+      - name: Upload debug logs on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-post-logs
+          path: |
+            post_result.txt
+            output_image.jpg
+            output.mp4
+
+      - name: Send failure email
+        if: ${{ failure() }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          from: "Coding Tips Bot <${{ secrets.EMAIL_USER }}>"
+          to: vallarasuk143@gmail.com
+          server_address: smtp.gmail.com
+          server_port: "465"
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: "Daily Post FAILED - Run #${{ github.run_number }}"
+          body: |
+            ❌ Daily coding tip poster failed.
+
+            --- Last Known Result ---
+            ${{ steps.result.outputs.content }}
+
+            🔗 View logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          secure: true

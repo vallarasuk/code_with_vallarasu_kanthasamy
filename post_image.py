@@ -39,11 +39,12 @@ def post_image_to_instagram(image_path, caption):
             image_path,
             caption=caption
         )
-        print(f"Upload successful. Media ID: {media.pk}")
-        return True
+        post_url = f"https://instagram.com/p/{media.code}/"
+        print(f"Upload successful. Post URL: {post_url}")
+        return post_url
     except Exception as e:
         print(f"Failed to upload image: {e}")
-        return False
+        return None
 
 def main():
     parser = argparse.ArgumentParser(description="Generate and post a code tip image to Instagram.")
@@ -70,13 +71,21 @@ def main():
     caption = f"{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n#coding #programming #developer #python #javascript #tech #webdev #software #codewithvallarasukanthasamy"
     
     if args.dry_run:
+        post_url = "https://instagram.com/p/DRY-RUN/"
         print(f"[DRY-RUN] Would post {image_path} to Instagram with caption:\n{caption}")
+        with open("post_result.txt", "w") as f:
+            f.write(f"Dry Run URL: {post_url}\nTitle: {title}")
     else:
-        success = post_image_to_instagram(image_path, caption)
-        if success:
+        post_url = post_image_to_instagram(image_path, caption)
+        if post_url:
             print("Successfully posted image to Instagram!")
+            with open("post_result.txt", "w") as f:
+                f.write(f"Post URL: {post_url}\nTitle: {title}")
         else:
             print("Failed to post image to Instagram.")
+            with open("post_result.txt", "w") as f:
+                f.write(f"Failed to post image.\nTitle: {title}")
+            exit(1)
             
     # Clean up (optional)
     # if os.path.exists(image_path):
