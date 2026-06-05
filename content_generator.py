@@ -34,15 +34,17 @@ def generate_daily_tip():
     available_models = get_available_models(client)
     
     prompt = """
-    You are an expert software developer and social media marketer. Generate a short, practical coding trick or tip.
+    You are an expert software developer and social media marketer. Generate a practical coding trick or tip.
     The title MUST be a "curiosity hook" or clickbait-style sentence that makes people want to watch. 
     Examples of good titles: "Stop using if-else. Do this instead!", "99% of React devs make this mistake", "The secret trick senior devs use".
     
     Focus on popular languages like Python, JavaScript, TypeScript, or React.
     
+    IMPORTANT: DO NOT use any emojis in the title or the code snippet. Our image rendering engine does not support emojis and they will render as broken square boxes.
+    
     Return ONLY a JSON object with two keys:
     - "title": A curiosity-inducing hook (max 60 chars).
-    - "code": The actual code snippet demonstrating the tip (keep it concise, under 15 lines).
+    - "code": The actual code snippet demonstrating the tip. It MUST be exactly between 10 and 15 lines long. If the tip is shorter, add meaningful context, usage examples, or comments to reach the minimum 10 lines.
     
     Do not include markdown backticks around the JSON.
     """
