@@ -1,0 +1,8 @@
+google-genai
+Pillow
+pygments
+moviepy
+instagrapi
+requests
+gdown
+python-dotenv
