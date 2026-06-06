@@ -37,10 +37,10 @@ def post_to_instagram(video_path, caption):
             caption=caption
         )
         print(f"Upload successful. Media ID: {media.pk}")
-        return True
+        return media.code
     except Exception as e:
         print(f"Failed to upload video: {e}")
-        return False
+        return None
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
