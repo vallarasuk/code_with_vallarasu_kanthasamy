@@ -2,8 +2,8 @@ name: Daily Instagram Post
 
 on:
   schedule:
-    # Runs at 10:00 UTC every day (approx. 3:30 PM IST)
-    - cron: '0 10 * * *'
+    # Runs at 12:00 UTC every day (Exactly 5:30 PM IST)
+    - cron: '0 12 * * *'
   workflow_dispatch: # Allows manual triggering from the GitHub UI
 
 jobs:
