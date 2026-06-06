@@ -34,7 +34,7 @@ def generate_daily_tip():
     available_models = get_available_models(client)
     
     prompt = """
-    You are an expert software developer and social media marketer. Generate a practical coding trick or tip.
+    You are an expert software developer and social media marketer. Generate a short, practical coding trick or tip.
     The title MUST be a "curiosity hook" or clickbait-style sentence that makes people want to watch. 
     Examples of good titles: "Stop using if-else. Do this instead!", "99% of React devs make this mistake", "The secret trick senior devs use".
     
@@ -42,9 +42,10 @@ def generate_daily_tip():
     
     IMPORTANT: DO NOT use any emojis in the title or the code snippet. Our image rendering engine does not support emojis and they will render as broken square boxes.
     
-    Return ONLY a JSON object with two keys:
+    Return ONLY a JSON object with three keys:
     - "title": A curiosity-inducing hook (max 60 chars).
-    - "code": The actual code snippet demonstrating the tip. It MUST be exactly between 10 and 15 lines long. If the tip is shorter, add meaningful context, usage examples, or comments to reach the minimum 10 lines.
+    - "code": The actual code snippet demonstrating the tip. It MUST be exactly between 10 and 15 lines long. To fit on mobile screens, NEVER exceed 45 characters per line! If a line is too long, wrap it nicely.
+    - "hashtags": A string of 5-8 highly relevant hashtags based specifically on the language/framework used in the code (e.g. "#python #reactjs #webdev").
     
     Do not include markdown backticks around the JSON.
     """
@@ -59,13 +60,14 @@ def generate_daily_tip():
             )
             clean_response = response.text.replace('```json', '').replace('```', '').strip()
             data = json.loads(clean_response)
-            return data.get("title", "Daily Coding Tip"), data.get("code", "print('Hello World')")
+            default_hashtags = "#coding #programming #developer #tech #codewithvallarasukanthasamy"
+            return data.get("title", "Daily Coding Tip"), data.get("code", "print('Hello World')"), data.get("hashtags", default_hashtags)
         except Exception as e:
             print(f"Model {model_name} failed: {e}")
             continue
             
     print("All models failed due to rate limits or API errors.")
-    return "Daily Coding Tip", "print('Keep coding!')"
+    return "Daily Coding Tip", "print('Keep coding!')", "#coding #programming #developer"
 
 if __name__ == "__main__":
     from dotenv import load_dotenv

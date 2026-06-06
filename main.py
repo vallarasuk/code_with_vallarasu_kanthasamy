@@ -14,7 +14,7 @@ def main():
     load_dotenv()
     
     print("--- Step 1: Generating Content ---")
-    title, code = generate_daily_tip()
+    title, code, hashtags = generate_daily_tip()
     print(f"Title: {title}")
     print(f"Code:\n{code}\n")
     
@@ -36,7 +36,14 @@ def main():
         
     print("--- Step 5: Posting to Instagram ---")
     date_str = datetime.now().strftime("%B %d, %Y")
-    caption = f"{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n#coding #programming #developer #python #javascript #tech #webdev #software #codewithvallarasukanthasamy"
+    
+    author_info = """👨‍💻 Vallarasu Kanthasamy
+🌐 Portfolio: vallarasuk.com
+💻 GitHub: github.vallarasuk.com
+🤝 LinkedIn: linkedin.vallarasuk.com
+💬 WhatsApp Community: squad.vallarasuk.com"""
+
+    caption = f"📌 Save this trick for your next project!\n\n{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n{author_info}\n\n{hashtags} #codewithvallarasukanthasamy"
     
     if args.dry_run:
         print(f"[DRY-RUN] Would post {video_path} to Instagram with caption:\n{caption}")
