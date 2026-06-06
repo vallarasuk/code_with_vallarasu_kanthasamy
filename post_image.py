@@ -51,7 +51,7 @@ def main():
     args = parser.parse_args()
 
     print("--- Step 1: Generating Content ---")
-    title, code = generate_daily_tip()
+    title, code, hashtags = generate_daily_tip()
     
     if not title or not code:
         print("Failed to generate content. Exiting.")
@@ -67,7 +67,14 @@ def main():
         
     print("--- Step 3: Posting to Instagram ---")
     date_str = datetime.now().strftime("%B %d, %Y")
-    caption = f"{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n#coding #programming #developer #python #javascript #tech #webdev #software #codewithvallarasukanthasamy"
+    
+    author_info = """👨‍💻 Vallarasu Kanthasamy
+🌐 Portfolio: vallarasuk.com
+💻 GitHub: github.vallarasuk.com
+🤝 LinkedIn: linkedin.vallarasuk.com
+💬 WhatsApp Community: squad.vallarasuk.com"""
+
+    caption = f"📌 Save this trick for your next project!\n\n{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n{author_info}\n\n{hashtags} #codewithvallarasukanthasamy"
     
     if args.dry_run:
         print(f"[DRY-RUN] Would post {image_path} to Instagram with caption:\n{caption}")
