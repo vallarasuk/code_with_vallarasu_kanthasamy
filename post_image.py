@@ -40,10 +40,10 @@ def post_image_to_instagram(image_path, caption):
             caption=caption
         )
         print(f"Upload successful. Media ID: {media.pk}")
-        return True
+        return media.code
     except Exception as e:
         print(f"Failed to upload image: {e}")
-        return False
+        return None
 
 def main():
     parser = argparse.ArgumentParser(description="Generate and post a code tip image to Instagram.")
@@ -72,11 +72,18 @@ def main():
     if args.dry_run:
         print(f"[DRY-RUN] Would post {image_path} to Instagram with caption:\n{caption}")
     else:
-        success = post_image_to_instagram(image_path, caption)
-        if success:
-            print("Successfully posted image to Instagram!")
+        post_code = post_image_to_instagram(image_path, caption)
+        if post_code:
+            post_url = f"https://www.instagram.com/p/{post_code}/"
+            print(f"Successfully posted image to Instagram! Link: {post_url}")
+            # Write result for GitHub Actions email
+            with open("post_result.txt", "w") as f:
+                f.write(f"Title: {title}\nLink: {post_url}\n")
         else:
             print("Failed to post image to Instagram.")
+            # Write failure for GitHub Actions email
+            with open("post_result.txt", "w") as f:
+                f.write(f"Failed to post image to Instagram.\nTitle: {title}\n")
             
     # Clean up (optional)
     # if os.path.exists(image_path):

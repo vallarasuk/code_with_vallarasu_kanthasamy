@@ -41,11 +41,18 @@ def main():
     if args.dry_run:
         print(f"[DRY-RUN] Would post {video_path} to Instagram with caption:\n{caption}")
     else:
-        success = post_to_instagram(video_path, caption)
-        if success:
-            print("Successfully posted to Instagram!")
+        post_code = post_to_instagram(video_path, caption)
+        if post_code:
+            post_url = f"https://www.instagram.com/p/{post_code}/"
+            print(f"Successfully posted to Instagram! Link: {post_url}")
+            # Write result for GitHub Actions email
+            with open("post_result.txt", "w") as f:
+                f.write(f"Title: {title}\nLink: {post_url}\n")
         else:
             print("Failed to post to Instagram.")
+            # Write failure for GitHub Actions email
+            with open("post_result.txt", "w") as f:
+                f.write(f"Failed to post video to Instagram.\nTitle: {title}\n")
             
     # Cleanup temporary files
     for temp_file in [audio_path, image_path]:
