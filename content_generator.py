@@ -4,22 +4,33 @@ import json
 
 def get_available_models(client):
     """Dynamically fetches models that support content generation."""
-    models = []
+    pro_models = []
+    flash_models = []
     try:
         for m in client.models.list():
             if hasattr(m, 'supported_actions') and m.supported_actions and 'generateContent' in m.supported_actions:
-                # Prefer fast/cheap flash models
-                if 'flash' in m.name.lower():
-                    models.append(m.name)
+                name = m.name.lower()
+                # Filter out specialized, audio/image, or internal preview models
+                if any(x in name for x in ['vision', 'tts', 'image', 'customtools', 'lyria', 'banana', 'deep-research']):
+                    continue
+                
+                # Since you have a Pro account, we prioritize Pro models first
+                if 'pro' in name:
+                    pro_models.append(m.name)
+                elif 'flash' in name:
+                    flash_models.append(m.name)
     except Exception as e:
         print(f"Failed to fetch models from API: {e}")
         
+    pro_models.sort(reverse=True)
+    flash_models.sort(reverse=True)
+    
+    models = pro_models + flash_models
+    
     if not models:
         # Absolute fallback if API listing fails
-        models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
+        models = ["gemini-2.5-pro", "gemini-2.0-pro", "gemini-2.5-flash", "gemini-2.0-flash"]
         
-    # Sort to prioritize newer models (e.g., gemini-2.5 before gemini-1.5)
-    models.sort(reverse=True)
     return models
 
 def generate_daily_tip():
@@ -34,18 +45,22 @@ def generate_daily_tip():
     available_models = get_available_models(client)
     
     prompt = """
-    You are an expert software developer and social media marketer. Generate a short, practical coding trick or tip.
-    The title MUST be a "curiosity hook" or clickbait-style sentence that makes people want to watch. 
-    Examples of good titles: "Stop using if-else. Do this instead!", "99% of React devs make this mistake", "The secret trick senior devs use".
+    You are an expert software engineer and tech educator. Generate a highly practical, advanced, or intermediate coding trick that provides real value to developers.
+    Avoid basic concepts. Focus on real-world scenarios, performance optimizations, clean code patterns, or hidden language features.
+    Examples of good topics: React custom hooks, TypeScript utility types, Python decorators, or clever JavaScript methods.
     
-    Focus on popular languages like Python, JavaScript, TypeScript, or React.
+    The title MUST be an engaging "curiosity hook" that makes people want to read. 
+    Examples: "Stop using if-else. Use this pattern!", "The TS trick senior devs use", "Why your React app is slow".
+    
+    Focus on popular technologies: Python, JavaScript, TypeScript, or React.
+    If possible, show a brief "Bad" vs "Good" approach in the code.
     
     IMPORTANT: DO NOT use any emojis in the title or the code snippet. Our image rendering engine does not support emojis and they will render as broken square boxes.
     
     Return ONLY a JSON object with three keys:
     - "title": A curiosity-inducing hook (max 60 chars).
-    - "code": The actual code snippet demonstrating the tip. It MUST be exactly between 10 and 15 lines long. To fit on mobile screens, NEVER exceed 45 characters per line! If a line is too long, wrap it nicely.
-    - "hashtags": A string of 5-8 highly relevant hashtags based specifically on the language/framework used in the code (e.g. "#python #reactjs #webdev").
+    - "code": The actual code snippet demonstrating the tip. It MUST be exactly between 10 and 15 lines long. To fit on mobile screens, NEVER exceed 45 characters per line! Wrap lines if needed.
+    - "hashtags": A string of 5-8 highly relevant hashtags based specifically on the language/framework used (e.g. "#python #reactjs #cleancode").
     
     Do not include markdown backticks around the JSON.
     """
