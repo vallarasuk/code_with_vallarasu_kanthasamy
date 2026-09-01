@@ -40,8 +40,8 @@ source venv/bin/activate
 
 # 5. Install dependencies
 echo "Installing Python dependencies from requirements.txt..."
-python3 -m pip install --upgrade pip
-python3 -m pip install -r requirements.txt
+venv/bin/python3 -m pip install --upgrade pip
+venv/bin/python3 -m pip install -r requirements.txt
 
 echo ""
 echo "Setup complete! ✅"

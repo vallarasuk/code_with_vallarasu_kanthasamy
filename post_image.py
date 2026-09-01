@@ -69,10 +69,10 @@ def main():
     date_str = datetime.now().strftime("%B %d, %Y")
     
     author_info = """👨‍💻 Vallarasu Kanthasamy
-🌐 Portfolio: vallarasuk.com
-💻 GitHub: github.vallarasuk.com
-🤝 LinkedIn: linkedin.vallarasuk.com
-💬 WhatsApp Community: squad.vallarasuk.com"""
+🌐 Portfolio: vallarasuk.in
+💻 GitHub: github.vallarasuk.in
+🤝 LinkedIn: linkedin.vallarasuk.in
+💬 WhatsApp Community: squad.vallarasuk.in"""
 
     caption = f"📌 Save this trick for your next project!\n\n{title}\n\n📅 {date_str}\nDaily coding tip! 💻✨\n\n{author_info}\n\n{hashtags} #codewithvallarasukanthasamy"
     

@@ -19,7 +19,7 @@ from pygments.formatters import ImageFormatter
 
 def fetch_random_audio(output_path="temp_audio.mp3"):
     """Fetches a random audio file from the provided JSON endpoint."""
-    url = "https://audio.vallarasuk.com/audio.json"
+    url = "https://audio.vallarasuk.in/audio.json"
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -52,13 +52,13 @@ def generate_code_image(title, code, output_path="temp_image.png"):
 
     formatter = ImageFormatter(
         style="monokai",
-        font_size=50,
+        font_size=36,
         line_numbers=True,
         line_number_bg="#161b22",
         line_number_fg="#858585",
         line_number_chars=4,
         background_color="#161b22",
-        padding=40,
+        padding=30,
     )
 
     code_img_data = highlight(code, lexer, formatter)
@@ -83,17 +83,17 @@ def generate_code_image(title, code, output_path="temp_image.png"):
     # Load fonts
     base_dir = os.path.dirname(os.path.abspath(__file__))
     try:
-        font_large = ImageFont.truetype(os.path.join(base_dir, "fonts", "Z003-MediumItalic.otf"), 75)
+        font_large = ImageFont.truetype(os.path.join(base_dir, "fonts", "NotoSans-Regular.ttf"), 55)
     except IOError:
         font_large = ImageFont.load_default()
         
     try:
-        font_medium = ImageFont.truetype(os.path.join(base_dir, "fonts", "ClickerScript-Regular.ttf"), 60)
+        font_medium = ImageFont.truetype(os.path.join(base_dir, "fonts", "NotoSans-Regular.ttf"), 40)
     except IOError:
         font_medium = ImageFont.load_default()
         
     try:
-        font_small = ImageFont.truetype(os.path.join(base_dir, "fonts", "NotoSans-Regular.ttf"), 35)
+        font_small = ImageFont.truetype(os.path.join(base_dir, "fonts", "NotoSans-Regular.ttf"), 30)
     except IOError:
         font_small = ImageFont.load_default()
 
@@ -105,14 +105,16 @@ def generate_code_image(title, code, output_path="temp_image.png"):
     draw.text(((WIDTH - date_w) // 2, 80), date_text, font=font_small, fill=(150, 180, 200, 255))
 
     # Draw Wrapped Title
-    lines = textwrap.wrap(title, width=30)
-    text_y = 150
+    lines = textwrap.wrap(title, width=35)
+    text_y = 140
     for line in lines:
         text_bbox = draw.textbbox((0, 0), line, font=font_large)
         text_w = text_bbox[2] - text_bbox[0]
         text_h = text_bbox[3] - text_bbox[1]
         draw.text(((WIDTH - text_w) // 2, text_y), line, font=font_large, fill=(255, 255, 255, 255))
-        text_y += text_h + 15
+        text_y += text_h + 30
+        
+    title_bottom_y = text_y
 
     # 3. Create IDE Window background and paste code image
     # Scale code image if it's too wide or too small
@@ -126,9 +128,9 @@ def generate_code_image(title, code, output_path="temp_image.png"):
         new_h = int(float(code_img.height) * float(ratio))
         code_img = code_img.resize((800, new_h), Image.Resampling.LANCZOS)
 
-    # Calculate position to center the IDE window
+    # Calculate position to center the IDE window, ensuring it doesn't overlap the title
     x_offset = (WIDTH - code_img.width) // 2
-    y_offset = (HEIGHT - code_img.height) // 2
+    y_offset = max(title_bottom_y + 80, (HEIGHT - code_img.height) // 2 - 30)
 
     # IDE Window Frame
     padding = 30
